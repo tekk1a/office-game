@@ -1,3 +1,4 @@
+import { useAgentBehavior } from '../../agents/useAgentBehavior'
 import { useAgentMovement } from '../../agents/useAgentMovement'
 import { useEffect } from 'react'
 import { useThree } from '@react-three/fiber'
@@ -6,6 +7,7 @@ import { AgentCharacter } from './AgentCharacter'
 
 export function Agents() {
   useAgentMovement()
+  useAgentBehavior()
   const agents = useAgentStore((state) => state.agents)
   const hoveredAgentId = useAgentStore((state) => state.hoveredAgentId)
   const get = useThree((state) => state.get)

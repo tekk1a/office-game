@@ -6,7 +6,7 @@ O ambiente usa somente primitivas Three.js, sem modelos ou texturas externas.
 - Repositório: https://github.com/tekk1a/office-game
 - Domínio futuro: office.tekkia.com.br; sem publicação nesta etapa.
 - Instruções: [AGENTS.md](./AGENTS.md).
-- Escopo atual: ambiente, personagens, seleção e painel aprovados, com movimentação controlada por waypoints. Sem movimentação autônoma, pathfinding complexo, personagens finais, IA, backend, Supabase, n8n ou APIs.
+- Escopo atual: ambiente, personagens, seleção, painel e navegação aprovados, com rotinas autônomas simuladas localmente. Sem IA real, OpenAI, Codex API, backend, Supabase, n8n, autenticação ou personagens finais.
 
 ## Executar
 
@@ -96,7 +96,7 @@ npm run preview
 ```
 
 O preview serve dist/ em http://localhost:4173. Não é um servidor de produção.
-Os arquivos permanecem locais; ainda não houve commit ou push.
+O checkpoint inicial foi enviado à main no commit 53471cbb7aea8ac1d9c4b7192f4b7397597c0e15. Alterações posteriores ficam locais até um novo checkpoint solicitado.
 
 O Fiber instalado ainda instancia THREE.Clock, depreciado pelo Three.js atual.
 Esse aviso da dependência não impede a cena; não há supressão nem patch local.
@@ -262,3 +262,68 @@ Validação em 07/10/2026:
 - Console de desenvolvimento sem erros; permanece o aviso de THREE.Clock da dependência.
 - Build mantém o aviso conhecido de tamanho do chunk 3D, carregado dinamicamente.
 - Preview final em localhost:4173 também validou Developer → centro, Walking → Idle, sem erros de console.
+
+## Etapa 06 — rotinas locais simuladas
+
+- agentRoutine.ts: tipos da rotina, etapas por agente, atividades e todos os tempos.
+- agentBehavior.ts: controller puro; decide etapas e delega rotas à navegação existente.
+- useAgentBehavior.ts: único scheduler de decisões, com cleanup ao desmontar/mudar modo.
+- RoutineControls.tsx: Iniciar/Continuar, Pausar e Reiniciar rotina.
+- tests/agentBehavior.test.mjs: sequências, esperas, pausa, retomada, reinício e bloqueio manual.
+
+AgentCharacter continua somente visual, sem temporizadores de comportamento.
+AgentNavigation, useAgentMovement e os waypoints existentes continuam sendo o
+único sistema de deslocamento. Não há IA, API, backend ou nova dependência.
+O controller puro recebe agentes, rotina e delta e retorna o próximo estado;
+isso separa decisões simuladas da navegação e da apresentação, sem implementar
+nenhum evento externo agora.
+
+A store guarda routine (modo e estado de cada sequência), currentActivity,
+status e movimento. A atividade é separada da tarefa/progresso demonstrativos,
+que não são reescritos. O painel deriva esses dados diretamente da store.
+
+| Agente | Sequência repetida | Tempos parado |
+| --- | --- | --- |
+| Developer | Mesa working → Centro idle → Café idle → Mesa working | Mesa 10 s; centro 2 s; café 5 s |
+| Marketing | Mesa working → Reunião meeting → Mesa idle → Mesa working | Trabalho 12 s; reunião 8 s; idle 6 s |
+| Research | Mesa working → Área livre idle → Centro idle → Mesa working | Trabalho 15 s; área livre 4 s; centro 3 s |
+
+No primeiro ciclo, a espera inicial tem deslocamentos adicionais de 0/2/4 s
+para Developer/Marketing/Research. As esperas começam após chegada e orientação.
+O scheduler verifica decisões a cada 100 ms e limita delta a 250 ms para não
+saltar etapas após suspensão da aba. A integração de movimento mantém 1,15 m/s
+com delta time, no hook já existente. Enquanto só a espera muda, as referências
+dos agentes são preservadas para evitar renderização 3D contínua desnecessária.
+
+A demonstração começa Pronta e é iniciada pelo botão. Pausar congela os tempos
+de espera e impede novas decisões; qualquer rota em andamento termina normalmente.
+O destino concluído ainda atualiza status/atividade durante a pausa. Continuar
+retoma a mesma etapa, sem restaurar câmera ou recomeçar o cronômetro de espera.
+
+Reiniciar deixa a rota em andamento terminar e então envia cada agente à sua
+própria mesa pela navegação existente; não teleporta, nem sobrescreve uma rota
+em andamento. Ao terminar, Developer/Research ficam working e Marketing idle,
+e o controller volta a Pronta. Clique Iniciar para uma nova demonstração.
+A seleção e a câmera não são resetadas pelo controller.
+
+Decisão de conflito: movimento manual fica disponível quando a rotina está
+Pronta; é bloqueado enquanto Ativa, Pausada ou Retornando às mesas. O bloqueio
+existe na UI e na store. Se já houver um movimento manual ao iniciar, ele termina
+antes de o controller encaminhar o agente à etapa inicial na mesa.
+Conversar, Ver tarefa e Parar continuam placeholders sem ação real.
+
+As rotas permanecem fixas e sem colisão dinâmica entre agentes; pontos compartilhados
+podem ser ocupados ao mesmo tempo. Não há movimentos aleatórios nem pathfinding.
+Validação da etapa 06 em 07/10/2026:
+
+- Typecheck, lint, build e dez testes automatizados aprovados (seis de comportamento, quatro de navegação).
+- Os três ciclos completos foram observados no navegador, com status e atividades corretos no painel.
+- Seleção de Developer durante caminhada aprovada, sem interromper a rota.
+- Pausa com Developer e Research caminhando: ambos concluíram o destino, sem iniciar outro percurso.
+- Tempos e estados permaneceram idênticos durante a pausa após as chegadas; renderização voltou a zero frames pendentes.
+- Continuar retomou a rotina; reiniciar devolveu todos às mesas por caminhada e deixou o controle em Pronta.
+- Reinício preservou a seleção de Marketing e a posição/rotação/zoom da câmera, inclusive após ajuste manual durante a pausa.
+- Movimento manual ficou novamente disponível após reinício; bloqueio na store também coberto por testes.
+- Escritório, câmera, personagens, waypoints e useAgentMovement não foram alterados em relação ao checkpoint.
+- Desenvolvimento e preview final sem erros de console; permanecem somente os avisos conhecidos de THREE.Clock e tamanho do chunk 3D.
+- Preview em localhost:4173 validou renderização e os controles Iniciar/Pausar. Os ciclos completos foram testados em localhost:5173.

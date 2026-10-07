@@ -5,8 +5,8 @@
 - Repositório: https://github.com/tekk1a/office-game
 - Pasta: C:\PROJETOS_CODEX\office-game
 - Domínio futuro: office.tekkia.com.br
-- Etapa atual: movimentação controlada por waypoints e animação provisória de caminhada.
-- Não implementar personagens finais, modelos externos, movimentação autônoma, pathfinding complexo, IA, backend,
+- Etapa atual: rotinas autônomas simuladas localmente, previsíveis e configuráveis.
+- Não implementar personagens finais, modelos externos, pathfinding complexo, IA real, OpenAI, Codex API, backend,
   Supabase, n8n, APIs, autenticação, multiplayer ou funcionalidades futuras nesta etapa.
 - O domínio é referência futura; publicação e DNS não fazem parte desta etapa.
 
@@ -45,6 +45,11 @@
   externos sem necessidade e autorização no escopo.
 - A cena usa frameloop demand; invalidar enquanto há movimento ou animação e voltar ao repouso na chegada.
 - Waypoints e integração delta time em src/agents; AgentCharacter contém apenas a apresentação.
+- agentRoutine centraliza tempos/etapas; agentBehavior decide; useAgentBehavior possui o único scheduler.
+- A rotina reutiliza agentNavigation/useAgentMovement/store; não criar uma segunda navegação.
+- Pausa congela decisões e esperas; a rota em andamento termina. Reinício volta às mesas por caminhada e fica pronto.
+- Movimento manual é bloqueado na rotina ativa, pausada ou retornando; a store também valida o bloqueio.
+- Atividade atual vem da store e é separada da tarefa demonstrativa; não duplicar estado na UI.
 - Mover é um controle de teste; manter Conversar, Ver tarefa e Parar como placeholders.
 - Câmera deve continuar vendo o escritório por cima, sem atravessar o piso,
   girar livremente ao redor ou ficar de cabeça para baixo.

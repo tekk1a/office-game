@@ -2,6 +2,7 @@ import { lazy, Suspense, useState } from 'react'
 import { SceneErrorBoundary } from './components/SceneErrorBoundary'
 import { AgentPanel } from './components/ui/AgentPanel'
 import { TopBar } from './components/ui/TopBar'
+import { RoutineControls } from './components/ui/RoutineControls'
 
 const OfficeScene = lazy(() => import('./components/OfficeScene'))
 
@@ -18,7 +19,7 @@ export default function App() {
       <section className="scene-card" aria-label="Protótipo do escritório 3D">
         <div className="scene-heading">
           <div>
-            <p className="eyebrow">ETAPA 05</p>
+            <p className="eyebrow">ETAPA 06</p>
             <h2>O escritório</h2>
           </div>
           <span className="badge">3 estações · 12 × 9 m</span>
@@ -39,6 +40,7 @@ export default function App() {
           </button>
         </div>
       </section>
+      <RoutineControls />
       <footer>Protótipo do ambiente · Escala aproximada de 1 unidade = 1 metro</footer>
     </main>
   )

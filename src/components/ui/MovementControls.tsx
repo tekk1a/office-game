@@ -4,6 +4,8 @@ import { useAgentStore } from '../../agents/useAgentStore'
 
 export function MovementControls({ agentId, walking }: { agentId: AgentId; walking: boolean }) {
   const [destination, setDestination] = useState<MovementDestination>('center')
+  const routineLocked = useAgentStore((state) => state.routine.mode !== 'stopped')
+  const disabled = walking || routineLocked
   const moveAgent = useAgentStore((state) => state.moveAgent)
 
   return (
@@ -11,7 +13,7 @@ export function MovementControls({ agentId, walking }: { agentId: AgentId; walki
       <p className="agent-field-label">Desenvolvimento · Movimento</p>
       <div className="movement-controls-row">
         <label htmlFor="movement-destination" className="sr-only">Destino</label>
-        <select id="movement-destination" value={destination} disabled={walking}
+        <select id="movement-destination" value={destination} disabled={disabled}
           onChange={(event) => setDestination(event.target.value as MovementDestination)}>
           <option value="desk">Mesa</option>
           <option value="center">Centro</option>
@@ -19,11 +21,11 @@ export function MovementControls({ agentId, walking }: { agentId: AgentId; walki
           <option value="coffee">Café</option>
           <option value="idle">Área livre</option>
         </select>
-        <button type="button" disabled={walking} onClick={() => moveAgent(agentId, destination)}>
+        <button type="button" disabled={disabled} onClick={() => moveAgent(agentId, destination)}>
           {walking ? 'Caminhando…' : 'Mover'}
         </button>
       </div>
-      <p className="movement-note">Mesa retorna à estação deste agente. Aguarde a chegada para enviar outro destino.</p>
+      <p className="movement-note">{routineLocked ? 'Controle manual bloqueado durante a rotina. Reinicie para retornar às mesas e liberar o controle.' : 'Mesa retorna à estação deste agente. Aguarde a chegada para enviar outro destino.'}</p>
     </section>
   )
 }

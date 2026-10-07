@@ -2,6 +2,7 @@ import type { Agent, AgentMovement, AgentPosition, MovementDestination } from '.
 import { CORRIDOR_Z, destinationPosition } from './officeWaypoints'
 
 export const WALK_SPEED = 1.15 // metres per second
+export const DESK_ROTATION_Y = -0.59
 const ROTATION_RESPONSE = 9
 
 export function angleDifference(target: number, current: number) {
@@ -29,7 +30,7 @@ export function createMovement(agent: Agent, destination: MovementDestination): 
     destination,
     route,
     finalStatus: destination === 'desk' && agent.id !== 'marketing' ? 'working' : 'idle',
-    finalRotationY: destination === 'desk' ? -0.59 : null,
+    finalRotationY: destination === 'desk' ? DESK_ROTATION_Y : null,
   }
 }
 

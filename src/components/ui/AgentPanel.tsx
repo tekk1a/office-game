@@ -65,6 +65,10 @@ export function AgentPanel() {
           <p className="agent-field-label">Tarefa atual</p>
           <p>{agent.currentTask}</p>
         </div>
+        <div className="agent-current-activity">
+          <p className="agent-field-label">Atividade atual</p>
+          <p>{agent.currentActivity}</p>
+        </div>
         <ProgressBar value={agent.progress} />
       </div>
       <div className="agent-panel-actions" aria-describedby="agent-actions-note">

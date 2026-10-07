@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { after, test } from 'node:test'
 import { createServer } from 'vite'
 
-const server = await createServer({ configFile: false, cacheDir: 'node_modules/.vite-navigation-tests', server: { middlewareMode: true }, appType: 'custom' })
+const server = await createServer({ configFile: false, cacheDir: 'node_modules/.vite-navigation-tests', server: { middlewareMode: true, ws: false }, appType: 'custom' })
 after(() => server.close())
 const { createMovement, stepAgent, WALK_SPEED } = await server.ssrLoadModule('/src/agents/agentNavigation.ts')
 const { initialAgents } = await server.ssrLoadModule('/src/agents/agentData.ts')
