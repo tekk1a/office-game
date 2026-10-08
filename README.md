@@ -6,7 +6,7 @@ O ambiente usa somente primitivas Three.js, sem modelos ou texturas externas.
 - Repositório: https://github.com/tekk1a/office-game
 - Domínio futuro: office.tekkia.com.br; sem publicação nesta etapa.
 - Instruções: [AGENTS.md](./AGENTS.md).
-- Escopo atual: ambiente, personagens, seleção, painel e navegação aprovados, com rotinas autônomas simuladas localmente. Sem IA real, OpenAI, Codex API, backend, Supabase, n8n, autenticação ou personagens finais.
+- Escopo atual: direção visual corporativa, preservando personagens, seleção, painel, navegação e rotinas locais. Sem IA real, OpenAI, Codex API, backend, Supabase, n8n, autenticação ou personagens finais.
 
 ## Executar
 
@@ -39,13 +39,13 @@ Uma unidade equivale aproximadamente a um metro.
 - Mesas: 1,8 × 0,8 m; altura 0,75 m. Vão lateral entre tampos: 1,7 m.
 - Cadeiras: assento a aproximadamente 0,48 m, encosto até 1,04 m.
 - Três monitores, com teclado e mouse; caderno e xícara em cada mesa.
-- Quatro plantas no piso e uma pequena sobre o armário lateral.
+- Quatro plantas no piso; ponto de café sobre o armário lateral.
 - Tapetes delimitam as estações. A faixa central de circulação, com cerca de
-  2 m de profundidade entre z = -0,4 e 1,6 m, permanece livre de móveis; há
+  1 m de profundidade em torno de z = 0,5 m, permanece livre de móveis; há
   espaço adicional na frente e nas laterais.
 
-A iluminação combina luz hemisférica, luz principal quente com sombra PCF
-de 2048 px e preenchimento frio. As geometrias são simples e os materiais
+A iluminação combina luz hemisférica, luz principal neutra/fria com sombra PCF
+de 2048 px, preenchimento frio e um ponto quente sem sombra no café. As geometrias são simples e os materiais
 foscos. A cena usa renderização sob demanda e DPR limitado a 1,5.
 
 ## Câmera e controles
@@ -60,6 +60,8 @@ A inclinação inicial é aproximadamente 45°. O enquadramento se adapta à tel
 - Restaurar câmera: volta à posição, centro e zoom iniciais.
 - Inclinação permitida: 38°–52°; azimute: 25°–65°.
 - Redimensionar a área 3D recalcula o enquadramento e restaura a vista inicial.
+
+O enquadramento desktop tem deslocamento óptico de 8,5% para dar espaço ao painel, independente da seleção. Em telas até 900 px, a composição é centralizada. Os limites e a interação permanecem iguais.
 
 ## Estrutura
 
@@ -91,6 +93,7 @@ A cena do cubo e sua store de rotação foram removidas. Zustand guarda os agent
 ```sh
 npm run typecheck
 npm run lint
+npm test
 npm run build
 npm run preview
 ```
@@ -327,3 +330,45 @@ Validação da etapa 06 em 07/10/2026:
 - Escritório, câmera, personagens, waypoints e useAgentMovement não foram alterados em relação ao checkpoint.
 - Desenvolvimento e preview final sem erros de console; permanecem somente os avisos conhecidos de THREE.Clock e tamanho do chunk 3D.
 - Preview em localhost:4173 validou renderização e os controles Iniciar/Pausar. Os ciclos completos foram testados em localhost:5173.
+
+## Etapa 07 — direção visual
+
+Paleta e materiais em src/theme/officeTheme.ts: grafite, azul profundo, madeira
+média, metal fosco e acentos discretos em ciano. O mesmo tema fornece variáveis
+CSS para UI, status, painel e indicadores; não há cores espalhadas nos componentes.
+
+- FloorPanels.tsx: 48 placas com variação determinística de cor em uma única
+  InstancedMesh; sem texturas externas e sem superfícies coplanares.
+- OfficeAreas.tsx: café no armário lateral, pequena mesa com duas cadeiras na
+  reunião e banco/mesa na área livre. Os destinos continuam desocupados.
+- Office.tsx, Desk, Computer, Chair, Plant e Lighting: materiais, painéis de
+  parede, luminárias simples, preenchimento frio e ponto quente no café.
+- AgentIndicator.tsx: nome/status compacto projetado da posição na store.
+  Os rótulos usam o root React principal, ignoram o ponteiro e são menores no
+  celular. Não criam temporizadores nem controlam posição/movimentação.
+- AgentCharacter: mesmas primitivas/proporções, materiais e seleção refinados.
+- App, TopBar, AgentPanel, MovementControls e RoutineControls: apresentação
+  escura e compacta, bordas sutis, blur de apenas 2 px no painel e ferramentas
+  temporárias identificadas como DEV CONTROLS; ações existentes preservadas.
+- OfficeCamera: mesmo ângulo inicial e limites; zoom ajustado para 13,2 m de
+  altura útil e deslocamento óptico desktop de 8,5%, independente da seleção.
+
+Validação em 07/10/2026:
+
+- Typecheck, lint, os dez testes existentes e build aprovados; nenhum teste foi alterado.
+- Arquivos de comportamento, navegação, posições, store e dependências intactos.
+- Ciclos completos dos três agentes observados no navegador, com café, reunião,
+  área livre e retorno às mesas; nenhum contato com os novos móveis.
+- Auditoria adicional dos limites reais dos novos móveis em 15.756 posições
+  dos percursos: distância mínima do centro do agente de aproximadamente 0,54 m,
+  superior à margem de 0,36 m usada nos testes existentes.
+- Seleção durante caminhada, painel, pausa/reinício, rotação, zoom e restauração conferidos.
+- Tela de 390 × 844 px sem transbordamento horizontal; painel com rolagem interna.
+- Desenvolvimento e preview final sem erros de console. Permanece o aviso conhecido
+  de THREE.Clock do Fiber, sem supressão ou alteração da dependência.
+- Cena em repouso: zero frames pendentes; piso instanciado, uma luz com sombras,
+  sem pós-processamento ou assets externos. Aproximadamente 12 mil triângulos na
+  medição do renderer; não foi feito benchmark de FPS em diferentes dispositivos.
+- Chunk 3D de produção: aproximadamente 947 kB / 251 kB gzip, carregado sob demanda;
+  permanece o aviso de tamanho do Vite.
+- Alterações locais desta etapa, sem commit ou push.

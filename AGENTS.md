@@ -5,7 +5,7 @@
 - Repositório: https://github.com/tekk1a/office-game
 - Pasta: C:\PROJETOS_CODEX\office-game
 - Domínio futuro: office.tekkia.com.br
-- Etapa atual: rotinas autônomas simuladas localmente, previsíveis e configuráveis.
+- Etapa atual: direção visual premium, preservando seleção, navegação, painel e rotinas locais já validados.
 - Não implementar personagens finais, modelos externos, pathfinding complexo, IA real, OpenAI, Codex API, backend,
   Supabase, n8n, APIs, autenticação, multiplayer ou funcionalidades futuras nesta etapa.
 - O domínio é referência futura; publicação e DNS não fazem parte desta etapa.
@@ -32,7 +32,10 @@
 - Manter três estações, mesas, cadeiras e monitores, sem bloquear o corredor
   central. Centros das estações a 3,5 m; mesas de 1,8 × 0,8 m, altura 0,75 m.
 - OfficeCamera.tsx: câmera ortográfica, zoom e deslocamento limitados.
-- src/index.css: estilos e responsividade.
+- src/theme/officeTheme.ts: paleta, materiais, iluminação, status e tokens da UI; cores somente neste arquivo.
+- FloorPanels usa instancing; OfficeAreas compõe café, reunião e área livre sem ocupar rotas.
+- AgentIndicator: rótulos HTML no root principal e projeção 3D sob demanda, sem interferir no ponteiro.
+- src/index.css: estilos e responsividade, usando as variáveis derivadas do tema.
 - public/: arquivos estáticos. Criar pastas somente quando houver conteúdo real.
 
 ## Convenções
@@ -67,10 +70,11 @@
 - npm run lint: Oxlint.
 - npm run build: tipos e bundle em dist/.
 - npm run preview: http://localhost:4173.
-- Antes de concluir: typecheck, lint, build e verificação no navegador.
+- Antes de concluir: typecheck, lint, os dez testes existentes, build e verificação no navegador.
+- Nesta etapa visual, não alterar a lógica de src/agents nem os testes; executar um ciclo completo e conferir folga dos novos móveis.
+- Não fazer commit nem push nesta etapa visual.
 - Testar Developer, Marketing, Research, fechar, reselecionar e Escape; revisar hover/seleção.
 - Conferir renderização WebGL, três estações e corredor, limites de rotação,
   deslocamento, zoom e restauração da câmera. Revisar o console.
 - Publicação, commit e push dependem do escopo solicitado.
 - Registrar limitações reais e nunca afirmar validações não executadas.
-

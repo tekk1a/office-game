@@ -1,3 +1,4 @@
+import { officeTheme } from '../../theme/officeTheme'
 import { useLayoutEffect, useRef } from 'react'
 import { useThree } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
@@ -13,7 +14,7 @@ export function OfficeCamera({ resetToken }: { resetToken: number }) {
   const correction = useRef(new Vector3())
   const { get, size, invalidate } = useThree()
   // Fit the full cutaway office, including the walls, at either viewport aspect.
-  const fittedZoom = Math.min(size.width / 17.8, size.height / 13.8)
+  const fittedZoom = Math.min(size.width / officeTheme.camera.fitWidth, size.height / officeTheme.camera.fitHeight)
 
   useLayoutEffect(() => {
     const camera = get().camera
@@ -22,13 +23,17 @@ export function OfficeCamera({ resetToken }: { resetToken: number }) {
     controls.current.enabled = false
     camera.position.set(...startPosition)
     camera.zoom = fittedZoom
+    // Reserve breathing room for the overlay even when no agent is selected.
+    if (size.width > officeTheme.camera.offsetBreakpoint) {
+      camera.setViewOffset(size.width, size.height, size.width * officeTheme.camera.desktopOffset, 0, size.width, size.height)
+    } else camera.clearViewOffset()
     camera.updateProjectionMatrix()
     controls.current.target.set(...target)
     controls.current.update()
     controls.current.saveState()
     controls.current.enabled = true
     invalidate()
-  }, [get, fittedZoom, invalidate, resetToken])
+  }, [get, fittedZoom, invalidate, resetToken, size.width, size.height])
 
   function limitPan() {
     const orbit = controls.current
@@ -65,5 +70,3 @@ export function OfficeCamera({ resetToken }: { resetToken: number }) {
     />
   )
 }
-
-

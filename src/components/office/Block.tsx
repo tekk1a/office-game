@@ -1,3 +1,4 @@
+import { officeTheme } from '../../theme/officeTheme'
 import type { ThreeElements } from '@react-three/fiber'
 
 type BlockProps = {
@@ -24,7 +25,7 @@ export function Block({
   return (
     <mesh name={name} position={position} rotation={rotation} castShadow={castShadow} receiveShadow={receiveShadow}>
       <boxGeometry args={size} />
-      <meshStandardMaterial color={color} roughness={0.8} {...materialProps} />
+      <meshStandardMaterial color={color} roughness={officeTheme.materials.wood.roughness} {...materialProps} />
     </mesh>
   )
 }

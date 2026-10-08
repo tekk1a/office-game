@@ -1,3 +1,5 @@
+import { officeTheme } from '../../theme/officeTheme'
+
 type PlantProps = {
   position: [number, number, number]
   scale?: number
@@ -12,7 +14,7 @@ const foliage: [number, number, number, number][] = [
   [0.04, 0.77, 0.23, 0.27],
 ]
 
-export function Plant({ position, scale = 1, potColor = '#bc8568' }: PlantProps) {
+export function Plant({ position, scale = 1, potColor = officeTheme.scene.pot }: PlantProps) {
   return (
     <group name="plant" position={position} scale={scale}>
       <mesh position={[0, 0.22, 0]} castShadow receiveShadow>
@@ -21,16 +23,16 @@ export function Plant({ position, scale = 1, potColor = '#bc8568' }: PlantProps)
       </mesh>
       <mesh position={[0, 0.43, 0]}>
         <cylinderGeometry args={[0.21, 0.21, 0.025, 10]} />
-        <meshStandardMaterial color="#605546" />
+        <meshStandardMaterial color={officeTheme.scene.soil} />
       </mesh>
       <mesh position={[0, 0.67, 0]} castShadow>
         <cylinderGeometry args={[0.025, 0.035, 0.5, 6]} />
-        <meshStandardMaterial color="#748265" />
+        <meshStandardMaterial color={officeTheme.scene.trunk} />
       </mesh>
       {foliage.map(([x, y, z, radius], index) => (
         <mesh key={index} position={[x, y, z]} scale={[0.9, 1.15, 0.85]} castShadow>
           <icosahedronGeometry args={[radius, 0]} />
-          <meshStandardMaterial color={index % 2 === 0 ? '#658c70' : '#82a17b'} flatShading roughness={1} />
+          <meshStandardMaterial color={index % 2 === 0 ? officeTheme.scene.foliage : officeTheme.scene.foliageLight} flatShading {...officeTheme.materials.character} />
         </mesh>
       ))}
     </group>

@@ -10,7 +10,7 @@ export function MovementControls({ agentId, walking }: { agentId: AgentId; walki
 
   return (
     <section className="movement-controls" aria-label="Teste de movimentação">
-      <p className="agent-field-label">Desenvolvimento · Movimento</p>
+      <p className="agent-field-label">DEV CONTROLS / MOVIMENTO</p>
       <div className="movement-controls-row">
         <label htmlFor="movement-destination" className="sr-only">Destino</label>
         <select id="movement-destination" value={destination} disabled={disabled}

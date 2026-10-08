@@ -12,15 +12,15 @@ export default function App() {
   return (
     <main className="foundation">
       <header>
-        <p className="eyebrow">TEKKIA / OFFICE GAME</p>
-        <h1>Um espaço para começar<span>.</span></h1>
-        <p className="intro">Escritório com personagens provisórios em escala humana.</p>
+        <p className="eyebrow">TEKKIA / WORKSPACE</p>
+        <h1>Office Game<span>.</span></h1>
+        <p className="intro">Um escritório conectado. Uma equipe em movimento.</p>
       </header>
       <section className="scene-card" aria-label="Protótipo do escritório 3D">
         <div className="scene-heading">
           <div>
-            <p className="eyebrow">ETAPA 06</p>
-            <h2>O escritório</h2>
+            <p className="eyebrow">WORKSPACE / 01</p>
+            <h2>Central de operações</h2>
           </div>
           <span className="badge">3 estações · 12 × 9 m</span>
         </div>
@@ -41,9 +41,7 @@ export default function App() {
         </div>
       </section>
       <RoutineControls />
-      <footer>Protótipo do ambiente · Escala aproximada de 1 unidade = 1 metro</footer>
+      <footer>Office Game · Direção visual / 07 · Ambiente em escala humana</footer>
     </main>
   )
 }
-
-

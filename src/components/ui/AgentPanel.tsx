@@ -1,3 +1,4 @@
+import { officeTheme } from '../../theme/officeTheme'
 import { useEffect, useRef } from 'react'
 import { useAgentStore } from '../../agents/useAgentStore'
 import { ProgressBar } from './ProgressBar'
@@ -51,7 +52,7 @@ export function AgentPanel() {
       </header>
       <div className="agent-panel-content" aria-live="polite">
         <div className="agent-identity">
-          <span className="agent-avatar" aria-hidden="true">{agent.name.slice(0, 1)}</span>
+          <span className="agent-avatar" style={{ color: officeTheme.agents[agent.id].shirt }} aria-hidden="true">{agent.name.slice(0, 1)}</span>
           <div>
             <h3 id="agent-panel-title">{agent.name}</h3>
             <p className="agent-role">{agent.role}</p>
@@ -61,13 +62,13 @@ export function AgentPanel() {
           <span className="agent-field-label">Status</span>
           <StatusBadge status={agent.status} />
         </div>
-        <div className="agent-task">
-          <p className="agent-field-label">Tarefa atual</p>
-          <p>{agent.currentTask}</p>
-        </div>
         <div className="agent-current-activity">
           <p className="agent-field-label">Atividade atual</p>
           <p>{agent.currentActivity}</p>
+        </div>
+        <div className="agent-task">
+          <p className="agent-field-label">Tarefa atual</p>
+          <p>{agent.currentTask}</p>
         </div>
         <ProgressBar value={agent.progress} />
       </div>

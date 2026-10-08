@@ -16,7 +16,7 @@ export function RoutineControls() {
 
   return (
     <div className="routine-controls" aria-label="Controle da rotina simulada">
-      <p role="status">{modeLabels[mode]}</p>
+      <div className="routine-controls-label"><span className="eyebrow">DEV CONTROLS / ROTINA</span><p role="status">{modeLabels[mode]}</p></div>
       <div className="routine-controls-buttons">
         <button type="button" disabled={mode === 'running' || mode === 'resetting'} onClick={start}>
           {mode === 'paused' ? 'Continuar rotina' : 'Iniciar rotina'}
