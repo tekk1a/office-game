@@ -4,6 +4,8 @@ import { useAgentStore } from '../../agents/useAgentStore'
 import { ProgressBar } from './ProgressBar'
 import { StatusBadge } from './StatusBadge'
 import { MovementControls } from './MovementControls'
+import { TaskControls } from './TaskControls'
+import { taskStatusLabels } from '../../tasks/taskTypes'
 
 type PlaceholderAction = 'conversar' | 'ver-tarefa' | 'parar'
 
@@ -12,6 +14,7 @@ export function AgentPanel() {
     state.agents.find((item) => item.id === state.selectedAgentId),
   )
   const clearSelection = useAgentStore((state) => state.clearSelection)
+  const task = useAgentStore((state) => state.tasks.find((item) => item.id === agent?.currentTaskId))
   const closeButton = useRef<HTMLButtonElement>(null)
   const selectedId = agent?.id
 
@@ -68,9 +71,10 @@ export function AgentPanel() {
         </div>
         <div className="agent-task">
           <p className="agent-field-label">Tarefa atual</p>
-          <p>{agent.currentTask}</p>
+          <p>{task?.title ?? 'Sem tarefa'}</p>
         </div>
-        <ProgressBar value={agent.progress} />
+        <div className="agent-status-row task-status-row"><span className="agent-field-label">Estado da tarefa</span><span className="task-state">{task ? taskStatusLabels[task.status] : 'Sem tarefa'}</span></div>
+        <ProgressBar value={task?.progress ?? 0} />
       </div>
       <div className="agent-panel-actions" aria-describedby="agent-actions-note">
         <button type="button" onClick={() => placeholder('conversar')}>Conversar</button>
@@ -79,6 +83,7 @@ export function AgentPanel() {
       </div>
       <p id="agent-actions-note" className="agent-actions-note">Ações demonstrativas nesta etapa.</p>
       <MovementControls key={agent.id} agentId={agent.id} walking={agent.status === 'walking'} />
+      <TaskControls key={`tasks-${agent.id}`} agentId={agent.id} />
     </aside>
   )
 }

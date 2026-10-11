@@ -25,9 +25,8 @@ export type Agent = {
   name: string
   role: string
   status: AgentStatus
-  currentTask: string
+  currentTaskId: string | null
   currentActivity: string
-  progress: number
   rotationY: number
   movement: AgentMovement | null
   position: AgentPosition

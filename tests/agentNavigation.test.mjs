@@ -42,8 +42,7 @@ test('walks without teleporting; arrival changes status and restores monitor ori
   assert.deepEqual(agent.position, initialAgents[0].position)
   assert.equal(agent.status, 'working')
   assert.equal(agent.rotationY, -0.59)
-  assert.equal(agent.currentTask, initialAgents[0].currentTask)
-  assert.equal(agent.progress, 72)
+  assert.equal(agent.currentTaskId, initialAgents[0].currentTaskId)
 })
 
 test('ignores current location and protects in-flight routes from replacement', () => {

@@ -3,6 +3,9 @@ import { destinationPosition } from './officeWaypoints'
 import { agentRoutines, createRoutineState, routineTiming, travelActivities } from './agentRoutine'
 import type { AgentRoutineState, RoutineState, RoutineStep } from './agentRoutine'
 import type { Agent, AgentMovement, MovementDestination } from './agentTypes'
+import { initialTasks } from '../tasks/taskData'
+import { currentTaskTitle } from '../tasks/taskTypes'
+import type { Task } from '../tasks/taskTypes'
 
 // Pure decision controller. Position integration remains exclusively in agentNavigation.
 function travelTo(agent: Agent, destination: MovementDestination, finalStatus: RoutineStep['status']): AgentMovement | null {
@@ -15,9 +18,9 @@ function travelTo(agent: Agent, destination: MovementDestination, finalStatus: R
   return null
 }
 
-function waitAtStep(agent: Agent, state: AgentRoutineState, step: RoutineStep) {
+function waitAtStep(agent: Agent, state: AgentRoutineState, step: RoutineStep, title: string) {
   return {
-    agent: { ...agent, status: step.status, currentActivity: step.activity ?? agent.currentTask },
+    agent: { ...agent, status: step.status, currentActivity: step.activity ?? title },
     state: {
       ...state,
       phase: 'waiting' as const,
@@ -27,11 +30,11 @@ function waitAtStep(agent: Agent, state: AgentRoutineState, step: RoutineStep) {
   }
 }
 
-function stepRoutine(agent: Agent, state: AgentRoutineState, delta: number) {
+function stepRoutine(agent: Agent, state: AgentRoutineState, delta: number, title: string) {
   const steps = agentRoutines[agent.id]
   const step = steps[state.stepIndex]
   if (agent.movement) return { agent, state }
-  if (state.phase === 'traveling') return waitAtStep(agent, state, step)
+  if (state.phase === 'traveling') return waitAtStep(agent, state, step, title)
   if (state.phase === 'waiting') {
     const remainingSeconds = Math.max(0, state.remainingSeconds - delta)
     return {
@@ -42,21 +45,21 @@ function stepRoutine(agent: Agent, state: AgentRoutineState, delta: number) {
     }
   }
   const movement = travelTo(agent, step.destination, step.status)
-  if (!movement) return waitAtStep(agent, state, step)
+  if (!movement) return waitAtStep(agent, state, step, title)
   return {
     agent: { ...agent, movement, status: 'walking' as const, currentActivity: travelActivities[step.destination] },
     state: { ...state, phase: 'traveling' as const },
   }
 }
 
-function resetAgent(agent: Agent): Agent {
+function resetAgent(agent: Agent, title: string): Agent {
   if (agent.movement) return agent
   const movement = travelTo(agent, 'desk', agent.id === 'marketing' ? 'idle' : 'working')
   if (movement) return { ...agent, movement, status: 'walking', currentActivity: travelActivities.desk }
-  return { ...agent, status: agent.id === 'marketing' ? 'idle' : 'working', currentActivity: agent.id === 'marketing' ? 'Idle at desk' : agent.currentTask }
+  return { ...agent, status: agent.id === 'marketing' ? 'idle' : 'working', currentActivity: agent.id === 'marketing' ? 'Idle at desk' : title }
 }
 
-export function advanceBehavior(agents: readonly Agent[], routine: RoutineState, delta: number) {
+export function advanceBehavior(agents: readonly Agent[], routine: RoutineState, delta: number, tasks: readonly Task[] = initialTasks) {
   if (routine.mode === 'stopped') return { agents, routine }
   if (routine.mode === 'paused') {
     // A route may finish while paused. Reflect its arrival without counting down or dispatching.
@@ -65,7 +68,7 @@ export function advanceBehavior(agents: readonly Agent[], routine: RoutineState,
     const settled = agents.map((agent) => {
       const state = states[agent.id]
       if (agent.movement || state.phase !== 'traveling') return agent
-      const next = waitAtStep(agent, state, agentRoutines[agent.id][state.stepIndex])
+      const next = waitAtStep(agent, state, agentRoutines[agent.id][state.stepIndex], currentTaskTitle(agent.currentTaskId, tasks))
       states[agent.id] = next.state
       changed = true
       return next.agent
@@ -73,7 +76,7 @@ export function advanceBehavior(agents: readonly Agent[], routine: RoutineState,
     return changed ? { agents: settled, routine: { ...routine, agents: states } } : { agents, routine }
   }
   if (routine.mode === 'resetting') {
-    const returning = agents.map(resetAgent)
+    const returning = agents.map((agent) => resetAgent(agent, currentTaskTitle(agent.currentTaskId, tasks)))
     const allHome = returning.every((agent) => {
       const target = destinationPosition(agent.id, 'desk')
       return !agent.movement && Math.hypot(agent.position[0] - target[0], agent.position[2] - target[2]) < 0.001
@@ -83,7 +86,7 @@ export function advanceBehavior(agents: readonly Agent[], routine: RoutineState,
   }
   const states = { ...routine.agents }
   const updated = agents.map((agent) => {
-    const next = stepRoutine(agent, states[agent.id], Math.max(0, delta))
+    const next = stepRoutine(agent, states[agent.id], Math.max(0, delta), currentTaskTitle(agent.currentTaskId, tasks))
     states[agent.id] = next.state
     return next.agent
   })

@@ -27,3 +27,6 @@ dist-ssr
 !.env.example
 *.tsbuildinfo
 artifacts/
+
+# Original local 3D assets
+/ELEMENTOS 3D/

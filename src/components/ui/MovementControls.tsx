@@ -5,7 +5,8 @@ import { useAgentStore } from '../../agents/useAgentStore'
 export function MovementControls({ agentId, walking }: { agentId: AgentId; walking: boolean }) {
   const [destination, setDestination] = useState<MovementDestination>('center')
   const routineLocked = useAgentStore((state) => state.routine.mode !== 'stopped')
-  const disabled = walking || routineLocked
+  const tasksMode = useAgentStore((state) => state.workspaceMode === 'tasks')
+  const disabled = walking || routineLocked || tasksMode
   const moveAgent = useAgentStore((state) => state.moveAgent)
 
   return (
@@ -25,7 +26,7 @@ export function MovementControls({ agentId, walking }: { agentId: AgentId; walki
           {walking ? 'Caminhando…' : 'Mover'}
         </button>
       </div>
-      <p className="movement-note">{routineLocked ? 'Controle manual bloqueado durante a rotina. Reinicie para retornar às mesas e liberar o controle.' : 'Mesa retorna à estação deste agente. Aguarde a chegada para enviar outro destino.'}</p>
+      <p className="movement-note">{tasksMode ? 'No modo Tarefas, o deslocamento é controlado pela tarefa ativa.' : routineLocked ? 'Controle manual bloqueado durante a rotina. Reinicie para retornar às mesas e liberar o controle.' : 'Mesa retorna à estação deste agente. Aguarde a chegada para enviar outro destino.'}</p>
     </section>
   )
 }

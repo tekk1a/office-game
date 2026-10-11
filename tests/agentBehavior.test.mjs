@@ -7,6 +7,8 @@ after(() => server.close())
 const { advanceBehavior } = await server.ssrLoadModule('/src/agents/agentBehavior.ts')
 const { createRoutineState, agentRoutines, routineTiming } = await server.ssrLoadModule('/src/agents/agentRoutine.ts')
 const { initialAgents } = await server.ssrLoadModule('/src/agents/agentData.ts')
+const { initialTasks } = await server.ssrLoadModule('/src/tasks/taskData.ts')
+const { currentTaskTitle } = await server.ssrLoadModule('/src/tasks/taskTypes.ts')
 const { stepAgent } = await server.ssrLoadModule('/src/agents/agentNavigation.ts')
 const { destinationPosition } = await server.ssrLoadModule('/src/agents/officeWaypoints.ts')
 const { useAgentStore } = await server.ssrLoadModule('/src/agents/useAgentStore.ts')
@@ -34,11 +36,10 @@ test('each deterministic routine follows its ordered stops and returns to the pr
         visits[agent.id].push(step.destination)
         assert.deepEqual(agent.position, destinationPosition(agent.id, step.destination))
         assert.equal(agent.status, step.status)
-        assert.equal(agent.currentActivity, step.activity ?? agent.currentTask)
+        assert.equal(agent.currentActivity, step.activity ?? currentTaskTitle(agent.currentTaskId, initialTasks))
       }
       previous[agent.id] = key
-      assert.equal(agent.currentTask, initialAgents.find((a) => a.id === agent.id).currentTask)
-      assert.equal(agent.progress, initialAgents.find((a) => a.id === agent.id).progress)
+      assert.equal(agent.currentTaskId, initialAgents.find((a) => a.id === agent.id).currentTaskId)
     }
   }
   assert.deepEqual(visits.developer.slice(0, 4), ['desk', 'center', 'coffee', 'desk'])
@@ -100,7 +101,7 @@ test('restart completes the current segment and walks home without teleporting o
 })
 
 test('store blocks manual commands for running, paused and resetting routines and preserves selection', () => {
-  useAgentStore.setState({ agents: structuredClone(initialAgents), routine: createRoutineState(), selectedAgentId: 'research' })
+  useAgentStore.setState({ agents: structuredClone(initialAgents), tasks: structuredClone(initialTasks), workspaceMode: 'demo', routine: createRoutineState(), selectedAgentId: 'research' })
   useAgentStore.getState().startRoutine()
   for (const mode of ['running', 'paused', 'resetting']) {
     useAgentStore.setState({ routine: createRoutineState(mode) })

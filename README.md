@@ -1,12 +1,71 @@
 # Office Game
 
+Para continuar de outro dia ou conversa, leia [RETOMADA.md](./RETOMADA.md).
+
+## Etapa 08 — tarefas locais
+
+Selecione **Tarefas** abaixo do escritório e clique em um personagem. O painel
+preserva seleção, ações demonstrativas e movimento; a nova seção **Tarefas locais**
+permite atribuir um dos exemplos recebidos, iniciar/retomar, ajustar o progresso,
+solicitar atenção por dúvida/revisão/erro e concluir. Não executa trabalho real.
+
+- Ciclo: inbox → scheduled → working → needs_attention → working → done.
+  Também é possível concluir diretamente de working. Scheduled é uma fila;
+  não há agendamento por horário nem início automático.
+- Os cinco registros de exemplo ficam em memória. Recarregar restaura os dados.
+- Uma tarefa ativa por agente; outra atribuição fica na fila. Uma tarefa bloqueada
+  precisa ser retomada e concluída antes de iniciar a próxima.
+- Iniciar/retomar fora da mesa reutiliza os waypoints seguros existentes, a
+  velocidade de 1,15 m/s e a rotação suave. A tarefa permanece working enquanto
+  o agente fica walking; ao chegar, passa a working olhando para o monitor.
+- Dúvida/revisão: idle aguardando resposta/revisão. Erro: error. Concluída:
+  finished e 100%. Nenhuma dessas ações envia o agente para reunião.
+- Uma alteração durante caminhada preserva a rota; na chegada o estado da tarefa
+  é consultado novamente. Não há teleporte nem estado final obsoleto.
+- Trocar modo aguarda todas as rotas. Demonstração mantém a rotina/Mover e não
+  altera tarefas; Tarefas bloqueia esses controles, também na store. Trocar modo
+  preserva posição, seleção e câmera; a rotina volta ao estado Pronta.
+
+Organização: `src/tasks/taskTypes.ts`, `taskData.ts` e `taskTransitions.ts`;
+`src/agents/agentTaskBehavior.ts` interpreta o estado, e `useAgentStore.ts`
+coordena tarefas e agentes. `AgentPanel` deriva título/progresso por currentTaskId;
+`TaskControls` contém somente controles locais. Nenhum novo scheduler ou dependência.
+
+O ciclo de estados foi inspirado no [Hermes3D](https://github.com/iamlukethedev/hermes3d).
+A implementação é própria e local; nenhum código de execução, integração ou backend
+do Hermes foi importado. Escritório, câmera, personagens e assets permanecem iguais.
+
+Testes: os dez casos anteriores de rotina/navegação foram preservados, ajustando
+apenas a referência à tarefa. Treze novos casos cobrem o modelo local e os conflitos.
+As seções abaixo documentam as etapas anteriores e seus checkpoints históricos.
+
+Validação da etapa 08 em 10/10/2026:
+
+- Typecheck, Oxlint, 23 testes (10 anteriores + 13 novos) e build aprovados.
+- Desenvolvimento em localhost:5173 e build final em preview:4173 renderizados
+  no navegador. Console sem erros; permanece o aviso conhecido de THREE.Clock.
+- Marketing saiu para reunião, iniciou uma tarefa e retornou working à mesa.
+  Progresso manual, dúvida/revisão/erro, retomada e conclusão em 100% conferidos.
+- Developer recebeu revisão durante o retorno, concluiu a rota e ficou idle.
+  Research concluiu a tarefa durante a caminhada; trocar seleção preservou a rota
+  e a chegada resultou em finished. Outra tarefa de Marketing ficou na fila.
+- Zoom/rotação, fechar/reselecionar, Escape e placeholders conferidos. Fechar
+  o painel preservou as projeções da câmera; demonstração iniciou, pausou e
+  reiniciou, terminando Pronta nas mesas.
+- Tela de 390 × 844 px sem transbordamento horizontal; atribuição/início e
+  controles de tarefas acessíveis na rolagem do painel. Viewport restaurado.
+- Geometrias, tema, câmera, personagens, waypoints, integração e animação sem
+  alterações no Git. Não foram adicionadas dependências, IA ou backend.
+- Permanece o aviso do Vite para o chunk 3D (~947 kB / 251 kB gzip), carregado
+  sob demanda. Alterações desta etapa locais, sem commit ou push.
+
 Protótipo do escritório 3D com três agentes provisórios e painel de seleção em React, TypeScript, Vite e React Three Fiber.
 O ambiente usa somente primitivas Three.js, sem modelos ou texturas externas.
 
 - Repositório: https://github.com/tekk1a/office-game
 - Domínio futuro: office.tekkia.com.br; sem publicação nesta etapa.
 - Instruções: [AGENTS.md](./AGENTS.md).
-- Escopo atual: direção visual corporativa, preservando personagens, seleção, painel, navegação e rotinas locais. Sem IA real, OpenAI, Codex API, backend, Supabase, n8n, autenticação ou personagens finais.
+- Escopo atual: tarefas locais ligadas aos agentes, preservando escritório, personagens, seleção, painel, navegação e rotinas. Sem IA real, OpenAI, Codex API, backend, Supabase, n8n, autenticação ou personagens finais.
 
 ## Executar
 
