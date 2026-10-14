@@ -2,6 +2,68 @@
 
 Para continuar de outro dia ou conversa, leia [RETOMADA.md](./RETOMADA.md).
 
+## Gestão local — etapa 09 e sequência local
+
+Em **Tarefas**, use a **Fila de trabalho** abaixo do escritório para criar/editar
+trabalhos, atribuir responsável, definir prioridade/prazo e filtrar a fila. O
+escritório, câmera e painel existentes foram preservados. Detalhes de uma tarefa
+ficam na própria linha, com controles de andamento, entrega, revisão e histórico.
+
+**Pessoas responsáveis** permite cadastrar/editar nome e função. Pessoas têm
+tarefas na fila; os três agentes continuam sendo os únicos personagens 3D.
+Não são criadas contas ou acesso compartilhado.
+
+O estado de gestão é salvo neste navegador. Recarregar recupera tarefas, pessoas,
+entregas, histórico e vínculo com agentes; câmera, rotas e temporizadores não são
+persistidos. Os agentes voltam às posições iniciais e refletem a tarefa recuperada.
+Exportar gera backup JSON versão 2; Importar valida o arquivo e mostra uma prévia
+antes de Restaurar. A restauração substitui a gestão aberta, preserva posições e
+câmera e aguarda a rotina e as rotas terminarem. Versão 1 é migrada ao carregar.
+
+Armazenamento inválido fica bloqueado para proteger os dados originais, que podem
+ser baixados para recuperação. Falha de quota/leitura mantém os dados abertos e
+orienta exportar backup. Uma mudança em outra aba pausa o salvamento nesta aba;
+exporte o trabalho aberto e recarregue. Limites locais: 2 MB por backup, 1.000
+tarefas e 197 pessoas, além dos três agentes fixos.
+
+**Entrega para revisão** registra texto e link opcional HTTP/HTTPS. O responsável
+fica aguardando revisão; Aprovar conclui em 100%. Solicitar ajustes exige motivo,
+preserva a entrega anterior e permite retomar para enviar outra versão. Uma
+entrega pendente não pode pular aprovação/ajustes por Retomar ou Concluir. A
+conclusão manual continua disponível para tarefas sem entrega pendente.
+
+Sem IA, backend, autenticação ou execução automática. Compartilhamento e piloto
+com agente real continuam para um escopo futuro. Os capítulos a seguir registram
+as etapas históricas anteriores, cujas limitações de memória foram superadas aqui.
+
+Validação final do bloco local em 14/10/2026, após concluir todas as funcionalidades:
+
+- Typecheck, Oxlint e build aprovados; **46 testes passaram** (23 anteriores e 23 novos).
+- Desenvolvimento em localhost:5173 e build em localhost:4173 renderizados e
+  conferidos no Chrome. A instrumentação do navegador interno não respondeu;
+  a validação foi feita em uma aba separada do Chrome.
+- Criação/edição, prioridade/prazo, filtros, cadastro/edição de pessoa, progresso,
+  atenção, entrega, ajustes, nova versão e aprovação conferidos na interface.
+  Recarregar recuperou tarefas, pessoas, entregas e histórico.
+- Importação/restauração de fixtures JSON v1/v2, rejeição de JSON/vínculos inválidos,
+  fechamento de formulários antigos e preservação da câmera conferidos.
+  Exportar acionou o download; serialização/round trip cobertos nos testes.
+  O arquivo efetivamente baixado não foi inspecionado pelo controle do navegador.
+- Mudança em outra aba pausou a gravação; recarregar recuperou os dados novos.
+  Falhas de quota/leitura e conteúdo corrompido foram cobertas nos testes.
+- Marketing caminhou à reunião e retornou à estação ao iniciar tarefa; troca de
+  seleção durante movimento, Developer/Research, fechar/Escape, zoom/rotação,
+  restauração de câmera e rotina iniciar/pausar/reiniciar conferidos.
+- Tela de 390 × 844 px sem transbordamento horizontal, com formulários de tarefa,
+  pessoa e entrega acessíveis. O painel existente pode ser fechado para acessar
+  a fila em tela pequena. Viewport restaurado após a verificação.
+- Console sem erros; permanecem os avisos conhecidos de THREE.Clock e do chunk
+  3D (~947 kB / 251 kB gzip). Geometrias, câmera, tema, personagens, waypoints e
+  animação não foram alterados; nenhuma dependência foi adicionada.
+- Registros temporários criados na aba de desenvolvimento foram substituídos
+  pelos cinco exemplos iniciais. Evidências/fixtures ficam em artifacts/ (ignorada).
+  Sem commit, push ou publicação nesta implementação.
+
 ## Etapa 08 — tarefas locais
 
 Selecione **Tarefas** abaixo do escritório e clique em um personagem. O painel

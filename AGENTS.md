@@ -5,7 +5,7 @@
 - Repositório: https://github.com/tekk1a/office-game
 - Pasta: C:\PROJETOS_CODEX\office-game
 - Domínio futuro: office.tekkia.com.br
-- Etapa atual: tarefas locais ligadas aos agentes, preservando escritório premium, câmera, seleção, painel e rotinas validadas.
+- Etapa atual: gestão local de tarefas, backup, fila, entregas/revisão e responsáveis humanos, preservando escritório, câmera e painel.
 - Para retomar: ler RETOMADA.md, conferir Git e atender somente ao novo escopo; não reiniciar etapas concluídas automaticamente.
 - Não implementar personagens finais, modelos externos, pathfinding complexo, IA real, OpenAI, Codex API, backend,
   Supabase, n8n, APIs, autenticação, multiplayer ou funcionalidades futuras nesta etapa.
@@ -55,12 +55,19 @@
 - Movimento manual é bloqueado na rotina ativa, pausada ou retornando; a store também valida o bloqueio.
 - Tarefas locais em src/tasks: inbox, scheduled, working, needs_attention e done; scheduled significa fila com início manual.
 - A store é a única fonte de tarefas; agentes guardam currentTaskId. Título e progresso derivam da tarefa, sem cópias no agente.
-- Uma tarefa working ou needs_attention por agente. Novas atribuições entram na fila e não substituem a tarefa ativa.
+- src/participants/: cadastro local de responsáveis; três agentes fixos e pessoas sem avatar/login. Task.assigneeId é o único vínculo de responsável.
+- Uma tarefa working ou needs_attention por responsável (agente ou pessoa). Novas atribuições entram na fila e não substituem a tarefa ativa.
 - agentTaskBehavior traduz a tarefa em atividade/status e reutiliza a navegação existente; não criar outro scheduler.
 - Separar Demonstração e Tarefas: rotina/Mover só na demonstração; comandos de tarefa só em Tarefas. A troca aguarda todas as rotas.
 - Mudanças de tarefa durante movimento preservam a rota; a chegada consulta a tarefa atual, sem reutilizar estado final obsoleto.
 - Iniciar/retomar envia à mesa e orienta para o monitor. Dúvida/revisão aguardam idle; erro usa error; done usa finished e 100%.
-- Progresso manual de 0 a 99; Concluir define 100%. Dados em memória, sem execução real nem avanço automático.
+- Progresso manual de 0 a 99; conclusão/aprovação define 100%. Sem execução real nem avanço automático.
+- TaskWorkspace e seus formulários ficam abaixo do escritório. Preservar AgentPanel e suas ações demonstrativas.
+- taskStorage grava somente mudanças de tarefas, pessoas e currentTaskId. Não gravar posição, câmera, seleção, timers ou ticks de movimento.
+- Backup JSON versão 2 valida ids, vínculos, estados, entregas e histórico; migra versão 1. Restaurar aguarda rotina parada e rotas terminadas, preservando posições e seleção.
+- Dados inválidos, outra aba e falhas de quota/leitura devem produzir mensagem e preservar o conteúdo anterior. Não sobrescrever automaticamente armazenamento bloqueado.
+- Entrega resulta em needs_attention/review; aprovação conclui, ajustes exigem motivo e permitem retomada. Não permitir pular revisão de uma entrega pendente.
+- Histórico é local e faz parte do backup; não representa auditoria autenticada. Links de entrega somente HTTP/HTTPS sem credenciais.
 - Atividade atual vem da store e é separada do estado da tarefa; não duplicar estado na UI.
 - Mover é um controle de teste; manter Conversar, Ver tarefa e Parar como placeholders.
 - Câmera deve continuar vendo o escritório por cima, sem atravessar o piso,
@@ -80,7 +87,7 @@
 - npm run build: tipos e bundle em dist/.
 - npm run preview: http://localhost:4173.
 - Antes de concluir: typecheck, lint, testes de rotina/navegação/tarefas, build e verificação no navegador.
-- Nesta etapa, preservar geometrias, câmera, waypoints e animação. Cobrir fila, exclusividade, chegada e alterações durante movimento.
+- Nesta etapa, preservar geometrias, câmera, waypoints e animação. Cobrir CRUD, fila, pessoas, persistência, backup inválido, revisão, exclusividade e alterações durante movimento.
 - Não fazer commit nem push sem solicitação explícita.
 - Testar Developer, Marketing, Research, fechar, reselecionar e Escape; revisar hover/seleção.
 - Conferir renderização WebGL, três estações e corredor, limites de rotação,

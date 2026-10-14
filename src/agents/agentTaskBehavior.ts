@@ -6,7 +6,7 @@ import type { Task } from '../tasks/taskTypes'
 // Task intent is resolved centrally, never by the character or a second scheduler.
 export function reconcileAgentTask(agent: Agent, tasks: readonly Task[]): Agent {
   if (agent.movement) return agent // Finish the safe route, then read the latest task again.
-  const task = tasks.find((item) => item.id === agent.currentTaskId && item.assignedAgentId === agent.id)
+  const task = tasks.find((item) => item.id === agent.currentTaskId && item.assigneeId === agent.id)
   if (task?.status === 'working') {
     const movement = createMovement(agent, 'desk')
       ?? (Math.abs(angleDifference(DESK_ROTATION_Y, agent.rotationY)) > 0.015

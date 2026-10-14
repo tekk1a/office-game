@@ -3,6 +3,7 @@ import { SceneErrorBoundary } from './components/SceneErrorBoundary'
 import { AgentPanel } from './components/ui/AgentPanel'
 import { TopBar } from './components/ui/TopBar'
 import { RoutineControls } from './components/ui/RoutineControls'
+import { TaskWorkspace } from './components/ui/TaskWorkspace'
 
 const OfficeScene = lazy(() => import('./components/OfficeScene'))
 
@@ -41,6 +42,7 @@ export default function App() {
         </div>
       </section>
       <RoutineControls />
+      <TaskWorkspace />
       <footer>Office Game · Direção visual / 07 · Ambiente em escala humana</footer>
     </main>
   )
